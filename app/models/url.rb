@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Url < ApplicationRecord
+  has_many :clicks, dependent: :destroy
+
   before_validation :set_short_url, on: :create
 
   validates :original_url, presence: true
