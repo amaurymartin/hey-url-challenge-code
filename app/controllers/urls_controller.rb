@@ -1,52 +1,52 @@
 # frozen_string_literal: true
 
 class UrlsController < ApplicationController
-  def index
-    # recent 10 short urls
-    @url = Url.new
-    @urls = [
-      Url.new(short_url: 'ABCDE', original_url: 'http://google.com', created_at: Time.now),
-      Url.new(short_url: 'ABCDG', original_url: 'http://facebook.com', created_at: Time.now),
-      Url.new(short_url: 'ABCDF', original_url: 'http://yahoo.com', created_at: Time.now)
-    ]
-  end
+  before_action :set_urls, only: :index
+  before_action :set_url, only: %i[show visit]
 
   def create
-    raise 'add some code'
-    # create a new URL record
+    @url = Url.new(url_params)
+
+    if @url.save
+      redirect_to url_path(@url.short_url)
+    else
+      redirect_to urls_path, notice: @url.errors.full_messages.to_s
+    end
+  end
+
+  def index
+    @url = Url.new
   end
 
   def show
-    @url = Url.new(short_url: 'ABCDE', original_url: 'http://google.com', created_at: Time.now)
-    # implement queries
-    @daily_clicks = [
-      ['1', 13],
-      ['2', 2],
-      ['3', 1],
-      ['4', 7],
-      ['5', 20],
-      ['6', 18],
-      ['7', 10],
-      ['8', 20],
-      ['9', 15],
-      ['10', 5]
-    ]
-    @browsers_clicks = [
-      ['IE', 13],
-      ['Firefox', 22],
-      ['Chrome', 17],
-      ['Safari', 7]
-    ]
-    @platform_clicks = [
-      ['Windows', 13],
-      ['macOS', 22],
-      ['Ubuntu', 17],
-      ['Other', 7]
-    ]
+    @daily_clicks = @url.daily_clicks
+    @browsers_clicks = @url.clicks.on_current_month.count_by_browser.to_a
+    @platform_clicks = @url.clicks.on_current_month.count_by_platform.to_a
   end
 
   def visit
-    # params[:short_url]
-    render plain: 'redirecting to url...'
+    if @url.visit!(browser.name, browser.platform.name)
+      redirect_to @url.original_url
+    else
+      redirect_to urls_path, notice: "Couldn't redirect to original url"
+    end
+  end
+
+  private
+
+  def url_params
+    params.require(:url).permit(:original_url)
+  end
+
+  def set_urls
+    @urls = Url.latest
+  end
+
+  def set_url
+    short_url = params[:short_url] || params[:url]
+
+    @url = Url.find_by!(short_url: short_url)
+  rescue ActiveRecord::RecordNotFound
+    render file: 'public/404.html', status: :not_found
   end
 end
