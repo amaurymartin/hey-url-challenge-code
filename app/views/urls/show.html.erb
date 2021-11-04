@@ -3,12 +3,12 @@
     <ul class="card-panel collection with-header">
       <li class="collection-header">
         <h4>
-          Stats for <%= visit_url(@url.short_url) %>
+          Stats for <%= "http://127.0.0.1#{visit_path(@url.short_url)}" %>
         </h4>
       </li>
       <li class="collection-item">Created <%= @url.created_at.strftime('%b %d, %Y') %></li>
       <li class="collection-item">
-        Original URL: <%= link_to @url.original_url %>
+        Original URL: <%= link_to @url.original_url, @url.original_url, target: '_blank' %>
       </li>
     </ul>
   </div>
@@ -96,4 +96,4 @@
     drawBrowsersChart();
     drawPlatformsChart();
   }
- </script>
+</script>
