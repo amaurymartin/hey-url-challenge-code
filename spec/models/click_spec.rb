@@ -3,17 +3,29 @@
 require 'rails_helper'
 
 RSpec.describe Click, type: :model do
-  describe 'validations' do
-    it 'validates url_id is valid' do
-      skip 'add test'
+  subject(:click) { build(:click) }
+
+  describe '#validate' do
+    before { click.validate }
+
+    it { is_expected.to be_valid }
+
+    context 'when url is nil' do
+      subject(:click) { build(:click, url: nil) }
+
+      it { is_expected.to be_invalid }
     end
 
-    it 'validates browser is not null' do
-      skip 'add test'
+    context 'when url browser is blank' do
+      subject(:click) { build(:click, browser: '') }
+
+      it { is_expected.to be_invalid }
     end
 
-    it 'validates platform is not null' do
-      skip 'add test'
+    context 'when url platform is blank' do
+      subject(:click) { build(:click, platform: '') }
+
+      it { is_expected.to be_invalid }
     end
   end
 end
