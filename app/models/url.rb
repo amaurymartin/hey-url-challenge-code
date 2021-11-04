@@ -20,6 +20,16 @@ class Url < ApplicationRecord
     end
   end
 
+  def daily_clicks
+    daily_clicks = []
+
+    clicks.on_current_month.count_daily_clicks.each do |k, v|
+      daily_clicks << [k.day, v]
+    end
+
+    daily_clicks
+  end
+
   private
 
   def set_short_url
