@@ -37,6 +37,17 @@ RSpec.describe Url, type: :model do
     end
   end
 
+  describe '#visit!' do
+    before { url.save }
+
+    it :aggregate_failures do
+      expect { url.visit!('Chrome', 'Generic Linux') }
+        .to change(url, :clicks_count).by(1)
+      expect { url.visit!('Chrome', 'Generic Linux') }
+        .to change(Click, :count).by(1)
+    end
+  end
+
   describe '.latest' do
     subject(:latest) { described_class.latest }
 

@@ -12,6 +12,14 @@ class Url < ApplicationRecord
 
   scope :latest, -> { order(created_at: :desc).limit(10) }
 
+  def visit!(browser, platform)
+    transaction do
+      clicks.create(browser: browser, platform: platform)
+
+      update(clicks_count: clicks.count)
+    end
+  end
+
   private
 
   def set_short_url
