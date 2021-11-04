@@ -11,6 +11,8 @@
 AllCops:
   Exclude:
     - 'bin/*'
+    - 'db/**/*'
+    - 'config/**/*'
   NewCops: enable
 
 Style/Documentation:
